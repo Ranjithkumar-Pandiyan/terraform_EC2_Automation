@@ -23,6 +23,7 @@ jobs:
             git pull
             cd app
             sudo docker build -t my-web-app .
-            sudo docker stop my-web-app-container || true
-            sudo docker rm my-web-app-container || true
+            sudo docker stop $(sudo docker ps -q) || true
+            sudo docker rm $(sudo docker ps -aq) || true
             sudo docker run -d --name my-web-app-container -p 80:80 my-web-app
+
