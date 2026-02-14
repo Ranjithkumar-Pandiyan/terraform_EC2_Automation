@@ -12,11 +12,15 @@ data "aws_ami" "ubuntu" {
     values = ["ubuntu/images/hvm-ssd/ubuntu-jammy-22.04-amd64-server-*"]
   }
 }
+data "aws_vpc" "default" {
+  default = true
+}
 
 # Security Group for SSH and HTTP
 resource "aws_security_group" "web_sg" {
   name        = "web-security-group"
   description = "Allow SSH and HTTP access"
+  vpc_id      = data.aws_vpc.default.id
 
   ingress {
     description = "Allow SSH"
