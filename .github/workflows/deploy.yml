@@ -1,0 +1,28 @@
+name: Deploy Docker App to EC2
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "app/**"
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy to EC2 via SSH
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.EC2_PUBLIC_IP }}
+          username: ubuntu
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            cd terraform_EC2_Automation
+            git pull
+            cd app
+            sudo docker build -t my-web-app .
+            sudo docker stop my-web-app-container || true
+            sudo docker rm my-web-app-container || true
+            sudo docker run -d --name my-web-app-container -p 80:80 my-web-app
